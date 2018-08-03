@@ -20,8 +20,6 @@ public class CONST {
 	public final static int SKIP = 30;
 	
 	public static String algorithmName = "algorithms.DeltaAlgorithm";
-	public final static String defaultPath = "C:\\Users\\jante\\Desktop\\Programming\\Java\\images";
-	
 
 	public static float MIN_EXPONENT = 0;
 	public static float MAX_EXPONENT = 5;
