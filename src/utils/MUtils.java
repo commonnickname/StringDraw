@@ -172,12 +172,16 @@ public class MUtils {
 		int w = sourceImg.getWidth(), h = sourceImg.getHeight();
 		if (targetDim.width >= w && targetDim.height >= h) return sourceImg;
 		
+		float widthRatio = (float)w/targetDim.width;
+		float heightRatio = (float)h/targetDim.height;
 		int newW, newH = 0;
-		if (w >= h) {
+		if (widthRatio >= heightRatio) {
+			System.out.println("flag1");
 			newW = CONST.CANVAS_W;
 			float scalar = ((float)CONST.CANVAS_W)/w;
 			newH = (int)(((float)h)*scalar);
 		}else {
+			System.out.println("flag2");
 			newH = CONST.CANVAS_H;
 			float scalar = ((float)CONST.CANVAS_H)/h;
 			newW = (int)(((float)w)*scalar);
