@@ -45,6 +45,8 @@ public class MUtils {
 	}
 	
 	/**********************************************************************/
+	
+	// source: https://stackoverflow.com/questions/6972331/how-can-i-generate-a-set-of-points-evenly-distributed-along-the-perimeter-of-an
 	public static ArrayList<Point> calculatePoints(double width, double height, int n) {
 		ArrayList<Point> pointList = new ArrayList<Point>();
 		
@@ -96,7 +98,7 @@ public class MUtils {
 		return dp;
 	}
 	/**********************************************************************/
-
+	// Source: https://stackoverflow.com/questions/8113629/simplified-bresenhams-line-algorithm-what-does-it-exactly-do
 	
 	public static ArrayList<Point> getLinePoints(Point from, Point to) {
 		ArrayList<Point> pixels = new ArrayList<Point>();
