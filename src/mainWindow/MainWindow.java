@@ -87,7 +87,8 @@ public class MainWindow extends JFrame{
 		menuBar.openFileItem.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
 				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setCurrentDirectory(new java.io.File(CONST.defaultPath));
+				String userDir = System.getProperty("user.home");
+				fileChooser.setCurrentDirectory(new java.io.File(userDir + "/Desktop"));
 				fileChooser.setDialogTitle("Open File...");
 				
 				if (fileChooser.showOpenDialog(menuBar.openFileItem) != JFileChooser.APPROVE_OPTION) return;
