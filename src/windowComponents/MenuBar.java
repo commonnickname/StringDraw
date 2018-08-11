@@ -3,80 +3,113 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JFrame;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
+import algorithms.concrete.GlobalDelta;
+import algorithms.concrete.GlobalNaive;
+import algorithms.concrete.LocalDelta;
+import algorithms.concrete.LocalNaive;
 import data.CONST;
-import mainWindow.MainWindow;
-import utilDatatypes.CEnums.Mode;
+import utils.datatypes.CEnums.Mode;
+import utils.objects.ImageProcessor;
 
 public class MenuBar extends JMenuBar {
-	private JMenu fileCategory, settingsCategory, 
-				  selectAlgorithm, selectMode;
-	public JMenuItem openFileItem;
-	public JRadioButtonMenuItem naiveAlgorithm, globalNaiveAlgorithm, 
-								deltaAlgorithm, globalDeltaAlgorithm,
+	private JMenu fileCategory, settingsCategory, selectAlgorithm, selectMode;
+	public JMenuItem openFileItem, graphicalSettings;
+	public JRadioButtonMenuItem localNaive, globalNaive, 
+								localDelta, globalDelta,
 								singleMode, optimizationMode;
-	private MainWindow mainWindow;
+	private MainWindow mW;
 	
 	public MenuBar(MainWindow parentFrame) {
-		this.mainWindow = parentFrame;
+		this.mW = parentFrame;
 		
+		instantiateFileCategory();
+		instantiateSettingsCategory();
+	}
+
+	private void instantiateFileCategory() {
 		fileCategory = new JMenu("File");
 		add(fileCategory);
-		instantiateFileCategory();
+		openFileItem = new JMenuItem("Open File...");
+		fileCategory.add(openFileItem);
 		
+		instantiateFileSelectionListener();
+	}
+	
+	private void instantiateFileSelectionListener() {
+		openFileItem.addActionListener(new ActionListener(){ 
+			public void actionPerformed(ActionEvent e){ 
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setCurrentDirectory(new java.io.File(CONST.defaultPath));
+				fileChooser.setDialogTitle("Open File...");
+				
+				if (fileChooser.showOpenDialog(openFileItem) != JFileChooser.APPROVE_OPTION) return;
+				System.gc();
+				
+				String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+				mW.imageProcessor = new ImageProcessor(filePath);
+				mW.imageLoaded = mW.imageProcessor.imageProcessed;
+				if (!mW.imageLoaded) return;
+					
+				mW.updateContentPanels();
+		}});
+	}
+	
+	private void instantiateSettingsCategory() {
 		settingsCategory = new JMenu("Settings");
 		add(settingsCategory);
+		graphicalSettings = new JMenuItem("Graphics");
+		settingsCategory.add(graphicalSettings);
+		
 		instantiateAlgorithmSelection();
 		instantiateAlgorithmSelectionListeners();
 		instantiateModeSelection();
 		instantiateModeSelectionListeners();
-
-	}
-
-	private void instantiateFileCategory() {
-		openFileItem = new JMenuItem("Open File...");
-		fileCategory.add(openFileItem);
 	}
 	
 	private void instantiateAlgorithmSelection() {
 		selectAlgorithm = new JMenu("Select Algorithm");
-		naiveAlgorithm = new JRadioButtonMenuItem("Naive");
-		globalNaiveAlgorithm = new JRadioButtonMenuItem("Global Naive");
-		deltaAlgorithm = new JRadioButtonMenuItem("Delta");
-		globalDeltaAlgorithm = new JRadioButtonMenuItem("Global Delta");
+		localNaive = new JRadioButtonMenuItem(LocalNaive.name);
+		globalNaive = new JRadioButtonMenuItem(GlobalNaive.name);
+		localDelta = new JRadioButtonMenuItem(LocalDelta.name);
+		globalDelta = new JRadioButtonMenuItem(GlobalDelta.name);
 		
 		ButtonGroup algGroup = new ButtonGroup();
-		algGroup.add(naiveAlgorithm);
-		algGroup.add(globalNaiveAlgorithm);
-		algGroup.add(deltaAlgorithm);
-		algGroup.add(globalDeltaAlgorithm);
-		deltaAlgorithm.setSelected(true);
+		algGroup.add(localNaive);
+		algGroup.add(globalNaive);
+		algGroup.add(localDelta);
+		algGroup.add(globalDelta);
+		localDelta.setSelected(true);
 		
 		settingsCategory.add(selectAlgorithm);
-		selectAlgorithm.add(naiveAlgorithm);
-		selectAlgorithm.add(globalNaiveAlgorithm);
-		selectAlgorithm.add(deltaAlgorithm);
-		selectAlgorithm.add(globalDeltaAlgorithm);
+		selectAlgorithm.add(localNaive);
+		selectAlgorithm.add(globalNaive);
+		selectAlgorithm.add(localDelta);
+		selectAlgorithm.add(globalDelta);
 	}
 	
 	private void instantiateAlgorithmSelectionListeners() {
-		naiveAlgorithm.addActionListener(new ActionListener(){ 
+		localNaive.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
-				CONST.algorithmName = "algorithms.NaiveAlgorithm"; }});
-		globalNaiveAlgorithm.addActionListener(new ActionListener(){ 
+				CONST.algKey = "local-naive";
+				CONST.algName = CONST.algNames.get(CONST.algKey); }});
+		globalNaive.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
-				CONST.algorithmName = "algorithms.GlobalNaiveAlgorithm"; }});
-		deltaAlgorithm.addActionListener(new ActionListener(){ 
+				CONST.algKey = "global-naive";
+				CONST.algName = CONST.algNames.get(CONST.algKey); }});
+		localDelta.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
-				CONST.algorithmName = "algorithms.DeltaAlgorithm"; }});
-		globalDeltaAlgorithm.addActionListener(new ActionListener(){ 
+				CONST.algKey = "local-delta"; 
+				CONST.algName = CONST.algNames.get(CONST.algKey); }});
+		globalDelta.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
-				CONST.algorithmName = "algorithms.GlobalDeltaAlgorithm"; }});
+				CONST.algKey = "global-delta"; 
+				CONST.algName = CONST.algNames.get(CONST.algKey); }});
 	}
 	
 	private void instantiateModeSelection() {
@@ -97,10 +130,10 @@ public class MenuBar extends JMenuBar {
 	private void instantiateModeSelectionListeners() {
 		singleMode.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
-				mainWindow.changeMode(Mode.SINGLE); }});
+				mW.changeMode(Mode.SINGLE); }});
 		optimizationMode.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
-				mainWindow.changeMode(Mode.OPTIMIZATION); }});
+				mW.changeMode(Mode.OPTIMIZATION); }});
 	}
 	
 }

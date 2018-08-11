@@ -1,75 +1,76 @@
 package algorithms;
-import data.AlgorithmData;
-import utilDatatypes.CLine;
-import utilDatatypes.Pin;
-import utilDatatypes.Pixel;
-import utils.ParameterPackage;
+import java.util.ArrayList;
 
-public class DrawingAlgorithm {
-	public static String name = "base";
+import utils.datatypes.CEnums.Action;
+import utils.objects.AlgorithmData;
+import utils.objects.ParameterPackage;
+import utils.datatypes.CLine;
+import utils.datatypes.Pin;
+import utils.datatypes.Pixel;
+
+public abstract class DrawingAlgorithm {
+	public static String name = "default name";
 	
-	protected Boolean initiated, first;
-	protected float fitnessCutoff;
-	protected ParameterPackage params;
+	public float fitnessCutoff;
+	public Pin p1 = null;
+
+	public Pin p2 = null;
+	public Action action;
 	
 	public AlgorithmData algData;
+	public ParameterPackage params;
+	public ArrayList<CLine> fullLinesList;
 	
-	public DrawingAlgorithm(){
-		initiated = false;
-		first = true;
-	}
+	public Greedy greedy;
+	public Fitness fitness;
+	
+	public DrawingAlgorithm() { }
 
 	public void setup(AlgorithmData algData, ParameterPackage params) {
 		this.algData = algData;
 		this.params = params;
-		if(algData == null) {
-			System.out.println("algData null");
-		}
-		if(algData.pinList == null) {
-			System.out.println("algData.pinList null");
-		}
-		
-		setupTargetVals();
+		action = Action.FIRST;
+		fullLinesList = new ArrayList<CLine>();
+
 		specificFunctionality();
-		initiated = true;
+		fitness.setupFitnessCutoff();
+		setupPixels();
 	}
 	
-
+	protected void setupPixels() {
+		fitness.setupTargetVals();
+		fitness.setupCurrentVals();
+		fitness.setupFitnessVals();
+	}
 	
-	// to be overridden by a subclass
 	protected void specificFunctionality() {}
 	
-	protected void setupTargetVals() {
-		for (int x = 0; x < algData.width; x++) {
-		for (int y = 0; y < algData.height; y++) {
-			algData.pixels[x][y].targetVal = (float) Math.pow(algData.imgVals[x][y], params.gamma);
-		}}
-	}
-	
-	protected void setupCurrentVals() {}
-	
 	public CLine getLine(){
-		if (first) {
-			first = false;
-			return getFirstLine();
-		}
-		return getNextLine();
-		
+		CLine line = greedy.getLine();
+		if (line == null) return null;
+		fullLinesList.add(line);
+		transformLine(line);
+		return line;
 	}
 	
-	protected CLine getFirstLine() {
-		return null;
+	protected void transformLine(CLine line) {
+		if (line == null) return;
+		for (Pixel p: line.pixels) fitness.pixelTransformation(p);
 	}
-	protected CLine getNextLine() {
-		return null;
+	
+	public CLine getFirstLine() {
+		CLine cline = greedySelect(algData.pinList);
+		if(cline == null || getLineFitness(cline) < fitnessCutoff) return null;
+		p1 = cline.from; p2 = cline.to;
+		return cline;
 	}
 
-	
-	protected CLine greedySelect() {
+	protected CLine greedySelect(ArrayList<Pin> pinList) {
 		float fitness, recordFitness = -1;
 		CLine rline = null, cline = null;
-		for(Pin p: algData.pinList) {
-			cline = greedySelect(p);
+		
+		for(Pin p: pinList) {
+			cline = selectBestLine(p.lineList);
 			fitness = getLineFitness(cline);
 			if (fitness > recordFitness) {
 				recordFitness = fitness;
@@ -79,24 +80,22 @@ public class DrawingAlgorithm {
 		return rline;
 	}
 	
-	protected CLine greedySelect(Pin p) {
+	public CLine selectBestLine(ArrayList<CLine> lines) {
 		float fitness, recordFitness = -1;
 		CLine rline = null;
-		
-		for(CLine line: p.lineList) {
-			fitness = getLineFitness(line);
-			if (fitness > recordFitness) {
+		for(CLine cline: lines) {
+			fitness = getLineFitness(cline);
+			if(fitness > recordFitness) {
 				recordFitness = fitness;
-				rline = line;
+				rline = cline;
 			}
 		}
 		return rline;
 	}
 	
-	protected float getLineFitness(CLine line) {
+	public float getLineFitness(CLine line) {
 		if (line == null) return -1;
 		float sum = 0;
-		if (line.pixels == null) System.out.println("null!");
 		for(Pixel p: line.pixels) sum += p.fitnessVal;
 		return sum/line.getLength();
 	}
