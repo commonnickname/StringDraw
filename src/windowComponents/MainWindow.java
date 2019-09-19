@@ -5,9 +5,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import data.CONST;
 import utils.datatypes.CEnums.Mode;
-import utils.objects.ImageProcessor;
-import utils.objects.ParameterPackage;
+import utils.helpers.ImageProcessor;
+import utils.helpers.ParameterPackage;
 
 
 public class MainWindow extends JFrame{
@@ -17,7 +18,6 @@ public class MainWindow extends JFrame{
 	private JPanel leftPanel, rightPanel;
 	private ReferencePanel referencePanel;
 	public DrawingPanel leftDrawingPanel, rightDrawingPanel;
-	private ParameterPackage leftParameters, rightParameters;
 	
 	public ImageProcessor imageProcessor;
 	public Mode mode;
@@ -38,8 +38,6 @@ public class MainWindow extends JFrame{
 		setTitle("StringDraw");
 		setResizable(false);
 		
-		leftParameters = new ParameterPackage();
-		rightParameters = new ParameterPackage();
 		mode = Mode.SINGLE;
 		imageLoaded = false;
 	}
@@ -62,28 +60,21 @@ public class MainWindow extends JFrame{
 		
 		rightPanel = new JPanel();
 		rightPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-		rightDrawingPanel = new DrawingPanel(rightParameters);
+		rightDrawingPanel = new DrawingPanel();
 		rightPanel.add(rightDrawingPanel);
 		contentPanel.add(rightPanel);
 		
-		controlPanel = new ControlPanel(this, leftParameters, rightParameters);
+		controlPanel = new ControlPanel(this);
 		contentPanel.add(controlPanel);
 		
 		add(contentPanel);
 	}
 	
-	public void changeMode(Mode m) {
-		if (mode == m) return;
+	public void changeMode(Mode mode) {
+		if (this.mode == mode) return;
 		
-		if (m == Mode.SINGLE) {
-			mode = Mode.SINGLE;
-			controlPanel.tuningPanelLeft.setEnabled(false);
-		}
-		if (m == Mode.OPTIMIZATION) {
-			mode = Mode.OPTIMIZATION;
-			controlPanel.tuningPanelLeft.setEnabled(true);
-		}
-	
+		this.mode = mode;
+		controlPanel.tuningPanelLeft.setEnabled(mode == Mode.OPTIMIZATION);
 		updateLeftPanel();
 	}
 	
@@ -105,7 +96,7 @@ public class MainWindow extends JFrame{
 			leftPanel.revalidate();
 		}else if (mode == Mode.OPTIMIZATION) {
 			referencePanel = null;
-			leftDrawingPanel = new DrawingPanel(leftParameters);
+			leftDrawingPanel = new DrawingPanel();
 			leftPanel.add(leftDrawingPanel);
 			leftDrawingPanel.initialize(imageProcessor.imgFloatValues);
 			leftPanel.revalidate();
@@ -118,10 +109,15 @@ public class MainWindow extends JFrame{
 		if (imageProcessor == null) return;
 		rightPanel.removeAll();
 		rightDrawingPanel = null;
-		rightDrawingPanel = new DrawingPanel(rightParameters);
+		rightDrawingPanel = new DrawingPanel();
 		rightPanel.add(rightDrawingPanel);
 		rightDrawingPanel.initialize(imageProcessor.imgFloatValues);
 		rightPanel.revalidate();
+	}
+
+	public ParameterPackage getParameterPackage(String string) {
+
+		return controlPanel.getParameterPackage(string);
 	}
 
 	

@@ -17,7 +17,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import data.CONST;
-import utils.objects.ParameterPackage;
+import utils.helpers.ParameterPackage;
 
 public class TuningPanel extends JPanel{
 	JPanel parameterPanel, buttonsPanel;
@@ -29,9 +29,9 @@ public class TuningPanel extends JPanel{
 	private String borderName;
 	private ParameterPackage params;
 	
-	public TuningPanel(ParameterPackage params, String borderName, int justification) {
+	public TuningPanel(String borderName, int justification) {
 		setLayout(new BorderLayout());
-		this.params = params;
+		this.params = new ParameterPackage();
 		
 		this.justification = justification;
 		this.borderName = borderName;
@@ -82,10 +82,45 @@ public class TuningPanel extends JPanel{
 	}
 	
 	public void updateFields() {
-		cutoffField.setValue(params.cutoff * 100);
-        dExpField.setValue(params.deltaExponent);
-        dOpacityField.setValue(params.deltaOpacity * 100);
-        gammaField.setValue(params.gamma);
+		if (params == null) this.params = new ParameterPackage();
+		
+		cutoffField.setValue(this.params.cutoff * 100);
+        dExpField.setValue(this.params.deltaExponent);
+        dOpacityField.setValue(this.params.deltaOpacity * 100);
+        gammaField.setValue(this.params.gamma);
+	}
+	
+	public ParameterPackage getParameterPackage() {
+		
+		return params.clone();
+	}
+	
+	private void setupButtons() {
+		buttonsPanel = new JPanel();
+		buttonsPanel.setLayout(new FlowLayout());
+		add(buttonsPanel, BorderLayout.PAGE_END);
+		
+		applyButton = new JButton("Apply");
+		revertButton = new JButton("Revert");
+		
+		buttonsPanel.add(applyButton);
+		buttonsPanel.add(revertButton);
+	}
+	
+	private void setupButtonListeners() {
+		applyButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e){
+			float cutoff = ((Number)cutoffField.getValue()).floatValue()/100;
+			double exponent = ((Number)dExpField.getValue()).doubleValue();
+			float opacity = ((Number)dOpacityField.getValue()).floatValue()/100;
+			double gamma = ((Number)gammaField.getValue()).doubleValue();
+			
+			params = new ParameterPackage(cutoff, exponent, opacity, gamma);
+
+    	}});
+    	
+    	revertButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e){
+    		updateFields();
+    	}});
 	}
 	
 	private void setupLabels() {
@@ -132,40 +167,6 @@ public class TuningPanel extends JPanel{
 		layout.setVerticalGroup(vGroup);
 	}
 	
-
-
-	private void setupButtons() {
-		buttonsPanel = new JPanel();
-		buttonsPanel.setLayout(new FlowLayout());
-		add(buttonsPanel, BorderLayout.PAGE_END);
-		
-		applyButton = new JButton("Apply");
-		revertButton = new JButton("Revert");
-		
-		buttonsPanel.add(applyButton);
-		buttonsPanel.add(revertButton);
-	}
-	
-	private void setupButtonListeners() {
-		applyButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e){
-    		float nCutoffValue = ((Number)cutoffField.getValue()).floatValue()/100;
-    		double dExpValue = ((Number)dExpField.getValue()).doubleValue();
-    		float dOpacityValue = ((Number)dOpacityField.getValue()).floatValue()/100;
-    		double gammaValue = ((Number)gammaField.getValue()).doubleValue();
-
-    		if (nCutoffValue > 0 && nCutoffValue <= 1) params.cutoff = nCutoffValue;
-    		if (dExpValue > 0 && dExpValue <= 5) params.deltaExponent = dExpValue;
-    		if (dOpacityValue > 0.01 && dOpacityValue <= 1) params.deltaOpacity = dOpacityValue;
-    		if (gammaValue > 0 && gammaValue <= 5) params.gamma = gammaValue;
-    		
-    		updateFields();
-    	}});
-    	
-    	revertButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e){
-    		updateFields();
-    	}});
-	}
-	
 	public void setEnabled(boolean b) {
 		cutoffField.setEnabled(b);
         dExpField.setEnabled(b);
@@ -175,5 +176,7 @@ public class TuningPanel extends JPanel{
         applyButton.setEnabled(b);
 		revertButton.setEnabled(b);
 	}
+
+
 	
 }

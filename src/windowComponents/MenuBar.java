@@ -1,4 +1,5 @@
 package windowComponents;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,19 +10,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
-import algorithms.concrete.GlobalDelta;
-import algorithms.concrete.GlobalNaive;
-import algorithms.concrete.LocalDelta;
-import algorithms.concrete.LocalNaive;
 import data.CONST;
 import utils.datatypes.CEnums.Mode;
-import utils.objects.ImageProcessor;
+import utils.helpers.ImageProcessor;
 
 public class MenuBar extends JMenuBar {
-	private JMenu fileCategory, settingsCategory, selectAlgorithm, selectMode;
+	private JMenu fileCategory, settingsCategory, selectMode;
 	public JMenuItem openFileItem, graphicalSettings;
 	public JRadioButtonMenuItem localNaive, globalNaive, 
 								localDelta, globalDelta,
+								localDeltaLog, globalDeltaLog,
 								singleMode, optimizationMode;
 	private MainWindow mW;
 	
@@ -44,14 +42,18 @@ public class MenuBar extends JMenuBar {
 	private void instantiateFileSelectionListener() {
 		openFileItem.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setCurrentDirectory(new java.io.File(CONST.defaultPath));
-				fileChooser.setDialogTitle("Open File...");
+				JFileChooser chooser = new JFileChooser();
+				ImagePreviewPanel preview = new ImagePreviewPanel();
+				chooser.setAccessory(preview);
+				chooser.addPropertyChangeListener(preview);
+				chooser.setCurrentDirectory(new java.io.File(CONST.defaultPath));
+				chooser.setDialogTitle("Open File...");
+				chooser.setPreferredSize(new Dimension(700, 500));
 				
-				if (fileChooser.showOpenDialog(openFileItem) != JFileChooser.APPROVE_OPTION) return;
+				if (chooser.showOpenDialog(openFileItem) != JFileChooser.APPROVE_OPTION) return;
 				System.gc();
-				
-				String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+				CONST.defaultPath = chooser.getCurrentDirectory().getAbsolutePath();
+				String filePath = chooser.getSelectedFile().getAbsolutePath();
 				mW.imageProcessor = new ImageProcessor(filePath);
 				mW.imageLoaded = mW.imageProcessor.imageProcessed;
 				if (!mW.imageLoaded) return;
@@ -66,50 +68,8 @@ public class MenuBar extends JMenuBar {
 		graphicalSettings = new JMenuItem("Graphics");
 		settingsCategory.add(graphicalSettings);
 		
-		instantiateAlgorithmSelection();
-		instantiateAlgorithmSelectionListeners();
 		instantiateModeSelection();
 		instantiateModeSelectionListeners();
-	}
-	
-	private void instantiateAlgorithmSelection() {
-		selectAlgorithm = new JMenu("Select Algorithm");
-		localNaive = new JRadioButtonMenuItem(LocalNaive.name);
-		globalNaive = new JRadioButtonMenuItem(GlobalNaive.name);
-		localDelta = new JRadioButtonMenuItem(LocalDelta.name);
-		globalDelta = new JRadioButtonMenuItem(GlobalDelta.name);
-		
-		ButtonGroup algGroup = new ButtonGroup();
-		algGroup.add(localNaive);
-		algGroup.add(globalNaive);
-		algGroup.add(localDelta);
-		algGroup.add(globalDelta);
-		localDelta.setSelected(true);
-		
-		settingsCategory.add(selectAlgorithm);
-		selectAlgorithm.add(localNaive);
-		selectAlgorithm.add(globalNaive);
-		selectAlgorithm.add(localDelta);
-		selectAlgorithm.add(globalDelta);
-	}
-	
-	private void instantiateAlgorithmSelectionListeners() {
-		localNaive.addActionListener(new ActionListener(){ 
-			public void actionPerformed(ActionEvent e){ 
-				CONST.algKey = "local-naive";
-				CONST.algName = CONST.algNames.get(CONST.algKey); }});
-		globalNaive.addActionListener(new ActionListener(){ 
-			public void actionPerformed(ActionEvent e){ 
-				CONST.algKey = "global-naive";
-				CONST.algName = CONST.algNames.get(CONST.algKey); }});
-		localDelta.addActionListener(new ActionListener(){ 
-			public void actionPerformed(ActionEvent e){ 
-				CONST.algKey = "local-delta"; 
-				CONST.algName = CONST.algNames.get(CONST.algKey); }});
-		globalDelta.addActionListener(new ActionListener(){ 
-			public void actionPerformed(ActionEvent e){ 
-				CONST.algKey = "global-delta"; 
-				CONST.algName = CONST.algNames.get(CONST.algKey); }});
 	}
 	
 	private void instantiateModeSelection() {

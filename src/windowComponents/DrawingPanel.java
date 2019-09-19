@@ -5,8 +5,8 @@ import data.CONST;
 import utils.datatypes.CLine;
 import utils.datatypes.Pin;
 import utils.datatypes.Point;
-import utils.objects.AlgorithmData;
-import utils.objects.ParameterPackage;
+import utils.helpers.AlgorithmData;
+import utils.helpers.ParameterPackage;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,9 +27,10 @@ public class DrawingPanel extends JPanel{
 	public boolean imageProcessed, algSuccess;
 	private RenderingHints renderingHints;
 	private Map<String, String> algNames;
+	int counter = 0;
 	
-	public DrawingPanel(ParameterPackage params) {
-		this.params = params;
+	public DrawingPanel() {
+		this.params = null;
 		setPreferredSize(new Dimension(CONST.FRAME_W, CONST.FRAME_H));
 		renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, 
 											RenderingHints.VALUE_ANTIALIAS_ON);
@@ -92,11 +93,14 @@ public class DrawingPanel extends JPanel{
 		g2d.dispose();
 	}
 	
-	public void drawLines() {
+	public void drawLines(ParameterPackage params) {
+		if (params == null || params.equals(this.params)) return;
+		this.params = params;
+		
 		prepareCanvas();
 		setupAlgorithm();
 		if (!algSuccess) return;
-
+		counter = 0;
 		Graphics2D g2d = (Graphics2D)bufferedImage.getGraphics();
 		Graphics g = this.getGraphics();
 		g2d.setColor(Color.BLACK);
@@ -121,6 +125,7 @@ public class DrawingPanel extends JPanel{
 			if (skip++ % CONST.SKIP == 0) g.drawImage(bufferedImage, 0, 0, null);
 			
 			line = algorithm.getLine();
+			//System.out.println(counter++);
 		}
 		repaint();
 		g2d.dispose();

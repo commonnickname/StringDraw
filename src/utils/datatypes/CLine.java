@@ -9,37 +9,43 @@ import utils.MUtils;
 public class CLine {
 	public final Pin from;
 	public final Pin to;
-	public float bestFitness;
 	public ArrayList<Pixel> pixels;
-	
+	public float fitness;
+
 	
 	public CLine(Pin from, Pin to){
 		this.from = from;
 		this.to = to;
-		bestFitness = 1;
 		pixels = new ArrayList<Pixel>();
+		updateFitness();
 	}
 	
 	public CLine(Pin from, Pin to, ArrayList<Pixel> pixels){
 		this.from = from;
 		this.to = to;
-		bestFitness = 1;
 		this.pixels = pixels;
+		updateFitness();
 	}
 	
 	public void setPixelList(ArrayList<Pixel> pixels) {
 		this.pixels = pixels;
+		updateFitness();
 	}
 	
 	public void createPixelList(Pixel[][] sourceArray) {
-		ArrayList<Pixel> pixels = new ArrayList<Pixel>();
-		ArrayList<Point> coords = MUtils.getLinePoints(from.coords, to.coords);
-		for(Point p: coords) pixels.add(sourceArray[p.x][p.y]);
-		this.pixels = pixels;
+		pixels = new ArrayList<Pixel>();
+		for(Point p: MUtils.getLinePoints(from.coords, to.coords)) {
+			pixels.add(sourceArray[p.x][p.y]);
+		}
+		updateFitness();
 	}
 	
-	public int getLength() {
-		return pixels.size();
+	public int getLength() { return pixels.size(); }
+	
+	public void updateFitness() {
+		fitness = 0;
+		for(Pixel p: pixels) fitness += p.fitnessVal;
+		fitness /= this.getLength();
 	}
 	
 	@Override

@@ -1,12 +1,19 @@
 package utils.datatypes;
 
+import java.util.ArrayList;
+
 public class Pixel {
 	public float targetVal;
 	public float currentVal;
 	public float fitnessVal;
+	public ArrayList<CLine> lines;
 	
 	public Pixel() {
-		
+		lines = new ArrayList<CLine>();
+	}
+	
+	public void updateFitnessOfLines(float delta) {
+		for(CLine line: lines) line.fitness += delta/line.getLength();
 	}
 	
 	public static float[][] getTargetVals(Pixel[][] source){

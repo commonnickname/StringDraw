@@ -1,7 +1,11 @@
 package data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import utils.datatypes.CEnums;
+import utils.datatypes.CEnums.AlgStrategy;
 
 public class CONST {
 	public final static int CANVAS_W = 579; 
@@ -22,28 +26,31 @@ public class CONST {
 	public final static double GREEN_WEIGHT = 0.7152;
 	public final static double BLUE_WEIGHT = 0.0722;
 	
-	public final static int PINNUM = 400;
+	public final static int PINNUM = 300;
 	public final static int PINSIZE = 3;
 	public final static int SCALAR = 3;
 	public final static int SKIP = 30;
 	
-	public final static String defaultPath = "C:\\Users\\jante\\Desktop\\Programming\\Java\\images";
+	public static String defaultPath = "";
 	
 	public final static Map<String, String> algNames = new HashMap<String, String>(){{
-		put("local-naive", "algorithms.concrete.LocalNaive");
-		put("local-delta", "algorithms.concrete.LocalDelta");
-		put("global-naive", "algorithms.concrete.GlobalNaive");
-		put("global-delta", "algorithms.concrete.GlobalDelta");
+		put("Naive", "algorithms.concrete.NaiveAlgorithm");
+		put("Delta", "algorithms.concrete.DeltaAlgorithm");
+		put("Delta Log", "algorithms.concrete.DeltaLogAlgorithm");
 	}};
-	public static String algKey = "local-delta";
+	public final static String[] algKeys = { "Naive", "Delta", "Delta Log" };
+	public static String algKey = "Delta";
 	public static String algName = algNames.get(algKey);
+	public static AlgStrategy algStrategy = AlgStrategy.LOCAL;
+	
+
 
 	public static float MIN_EXPONENT = 0;
 	public static float MAX_EXPONENT = 5;
 	public static float MIN_OPACITY = 0.01f;
 	public static float MAX_OPACITY = 1;
 	
-	public static float CUTOFF = 0.3f;
+	public static float CUTOFF = 0.1f;
 	public static double DELTA_EXPONENT = 2f;
 	public static float DELTA_OPACITY = 0.15f;
 	public static double GAMMA = 1.5;

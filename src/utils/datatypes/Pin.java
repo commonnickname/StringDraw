@@ -31,6 +31,13 @@ public class Pin{
 		return new Pin(coords);
 	}
 	
+	public CLine findConnectingLine(Pin to) {
+		for(CLine line: lineList) {
+			if (line.to.equals(to)) return line;
+		}
+		return null;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

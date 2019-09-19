@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import data.CONST;
 import utils.datatypes.CEnums.Mode;
 import windowComponents.MainWindow;
 
@@ -45,11 +46,14 @@ public class RunPanel extends JPanel{
 		runpause.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent e){ 
 			if (!mW.imageLoaded) return;
+
+			mW.rightDrawingPanel.drawLines(mW.getParameterPackage("Right"));
 			
-			mW.rightDrawingPanel.drawLines();
-			if (mW.mode == Mode.OPTIMIZATION) mW.leftDrawingPanel.drawLines();
-			
+			if (mW.mode == Mode.OPTIMIZATION) {
+				mW.leftDrawingPanel.drawLines(mW.getParameterPackage("Left"));
+			}
+				
 		}});
-		
 	}
+	
 }
