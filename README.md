@@ -9,3 +9,9 @@ You can also select Settings -> Select Mode -> Optimization Mode to generate two
 There are several algorithms that you can select from, 'naive', 'delta' and 'delta log' - they perform differently well depending on the details of a particular image. 
 
 There are two modes - local and global. In the local mode the algorithms try to select the best line starting from the previous selection line - thus they search only a subset of all possible line on each step. In the global mode the algorithms try to select the best line out of all possible lines and join the segments at the end such that the pattern could be produced with a single continuous thread. The global mode offers better accuracy for small details, but is coputationally more expensive and thus slover. 
+
+Demo videos:
+Bulldog Puppy: https://www.youtube.com/watch?v=9QEH-P27gXw
+Mona Lisa: https://www.youtube.com/watch?v=3cXhJ34x8gA
+Text 1: https://www.youtube.com/watch?v=kDUOt7F8zn8
+Text 2: https://www.youtube.com/watch?v=HcDbAHp6Ydk&t=2s
