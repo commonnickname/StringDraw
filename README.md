@@ -18,4 +18,4 @@ Mona Lisa: https://www.youtube.com/watch?v=3cXhJ34x8gA
 
 Text 1: https://www.youtube.com/watch?v=kDUOt7F8zn8
 
-Text 2: https://www.youtube.com/watch?v=HcDbAHp6Ydk&t=2s
+Text 2: https://www.youtube.com/watch?v=HcDbAHp6Ydk
